@@ -22,4 +22,27 @@ function handleFormSubmit(event) {
     document.getElementById('phone').value = '';
 }
 
+function initUI() {
+    axios.get('https://crudcrud.com/api/e46d73537f1049cd86330acab07c52d1/appointment')
+        .then(function (response) {
+            var userDetailsArray = response.data;
+
+            var userList = document.getElementById('userList');
+            userList.innerHTML = ''; 
+
+            userDetailsArray.forEach(function (userDetails) {
+                var listItem = document.createElement('li');
+                // Exclude the ID from the displayed information
+                listItem.textContent = `Username: ${userDetails.username}, Email: ${userDetails.email}, Phone: ${userDetails.phone}`;
+                userList.appendChild(listItem);
+            });
+        })
+        .catch(function (error) {
+            console.error('Error fetching data from the cloud:', error);
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    initUI();
+});
 
