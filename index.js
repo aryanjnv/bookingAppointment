@@ -10,26 +10,26 @@ function handleFormSubmit(event) {
         email: email,
         phone: phone
     };
-    axios.post('https://crudcrud.com/api/904259dd91b640a5b1a1a5a8b3a4d27f/appointment', userDetails)
+    axios.post('https://crudcrud.com/api/eb70361877f84d66bf2c7b632c3d1477/appointment', userDetails)
         .then(function (response) {
             console.log('Data stored in the cloud:', response.data);
         })
         .catch(function (error) {
             console.error('Error storing data in the cloud:', error);
         });
-        initUI();
     document.getElementById('username').value = '';
     document.getElementById('email').value = '';
     document.getElementById('phone').value = '';
+    initUI();
 }
 
 function initUI() {
-    axios.get('https://crudcrud.com/api/904259dd91b640a5b1a1a5a8b3a4d27f/appointment')
+    axios.get('https://crudcrud.com/api/eb70361877f84d66bf2c7b632c3d1477/appointment')
         .then(function (response) {
             var userDetailsArray = response.data;
 
             var userList = document.getElementById('userList');
-            userList.innerHTML = ''; // Clear previous entries
+            userList.innerHTML = ''; 
 
             userDetailsArray.forEach(function (userDetails) {
                 var listItem = document.createElement('li');
@@ -44,9 +44,15 @@ function initUI() {
                     deleteUser(userDetails._id);
                 };
 
-        
-                listItem.appendChild(deleteButton);
+                var editButton = document.createElement('button');
+                editButton.innerHTML = 'Edit';
+                editButton.style.cursor = 'pointer';
+                editButton.addEventListener('click', function () {
+                    editUser(userDetails);
+                });
 
+                listItem.appendChild(deleteButton);
+                listItem.appendChild(editButton);
                 
                 userList.appendChild(listItem);
             });
@@ -59,7 +65,7 @@ function initUI() {
 
 function deleteUser(userId) {
    
-    axios.delete(`https://crudcrud.com/api/904259dd91b640a5b1a1a5a8b3a4d27f/appointment/${userId}`)
+    axios.delete(`https://crudcrud.com/api/eb70361877f84d66bf2c7b632c3d1477/appointment/${userId}`)
         .then(function (response) {
             
             console.log('User deleted from the cloud:', response.data);
@@ -69,15 +75,35 @@ function deleteUser(userId) {
             if (userToDelete) {
                 userList.removeChild(userToDelete);
             }
-
-            initUI();
+            
         })
+        initUI();
         .catch(function (error) {
             
             console.error('Error deleting user from the cloud:', error);
         });
+        
 }
 
+function editUser(userDetails) {
+
+    document.getElementById('username').value = userDetails.username;
+    document.getElementById('email').value = userDetails.email;
+    document.getElementById('phone').value = userDetails.phone;
+
+
+    var currentUserId = userDetails._id;
+        deleteUser(currentUserId);
+        axios.post('https://crudcrud.com/api/eb70361877f84d66bf2c7b632c3d1477/appointment', userDetails)
+        .then(function (response) {
+            console.log('Data stored in the cloud:', response.data);
+        })
+        .catch(function (error) {
+            console.error('Error storing data in the cloud:', error);
+        });
+        initUI();
+          
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     initUI();
